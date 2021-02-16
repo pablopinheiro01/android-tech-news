@@ -18,25 +18,18 @@ class NoticiaRepository(
 
     fun buscaTodos() : LiveData<Resource<List<Noticia>?>> {
 
-        buscaInterno(quandoSucesso = {novasNoticias ->
+        val atualizaListaDeNoticias: (List<Noticia>) -> Unit = { novasNoticias ->
             //quando sucesso passamos a lista de noticias
             noticiasEncontradas.value = Resource(dado = novasNoticias)
-        })
+        }
+        buscaInterno(quandoSucesso = atualizaListaDeNoticias)
 
-        buscaNaApi(quandoSucesso = {novasNoticias ->
-            noticiasEncontradas.value = Resource(dado = novasNoticias)
-        }, quandoFalha = {mensagemDeErro ->
+        buscaNaApi(quandoSucesso = atualizaListaDeNoticias, quandoFalha = { erro ->
             //pego meu recurso atual
             val resourceAtual = noticiasEncontradas.value
             //verifico se a lista e diferente de nula significando que ja tenho informacoes previamente carregadas
-            val resourceCriado: Resource<List<Noticia>?> = if(resourceAtual != null){
-                Resource(dado = resourceAtual.dado, erro = mensagemDeErro)
-            }else{
-                //caso nao tenha nada na lista de erro eu seto somente a mensagem e a informacao do dado nula
-                Resource(dado = null, erro = mensagemDeErro)
-            }
-
-            noticiasEncontradas.value = resourceCriado
+            val resourceDeFalha = criaResourceDeFalha(resourceAtual, erro)
+            noticiasEncontradas.value = resourceDeFalha
         })
 
         return noticiasEncontradas;
