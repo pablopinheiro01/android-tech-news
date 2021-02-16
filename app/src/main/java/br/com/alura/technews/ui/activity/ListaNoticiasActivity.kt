@@ -75,10 +75,15 @@ class ListaNoticiasActivity: AppCompatActivity() {
     private fun buscaNoticias() {
         //quando chamamos o liveData temos acesso as suas funções, no caso o livedata esta atrelado ao observe que e retornado no buscatodos
         //1º parametro - a interface LifeCycleOwner ja e implementado automaticamente por Activits e Fragments
-        viewModel.buscaTodos().observe(this, Observer {
-            Log.i("teste", "Objeto atualizado")
+        viewModel.buscaTodos().observe(this, Observer {resource ->
+            resource.dado?.let{noticias ->
             //indico o objeto atualizado
-            adapter.atualiza(it)
+                adapter.atualiza(noticias)
+            }
+            resource.erro?.let{
+                mostraErro(MENSAGEM_FALHA_CARREGAR_NOTICIAS)
+            }
+            Log.i("teste", "Objeto atualizado")
         })
         //anteriormente implementavamos o tratamento do sucesso e do erro na activity, essa responsabilidade foi transferida para a ViewModel utilizando LiveData
         //            quandoSucesso = {

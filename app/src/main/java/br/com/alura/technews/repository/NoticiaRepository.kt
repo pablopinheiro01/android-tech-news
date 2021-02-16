@@ -1,6 +1,8 @@
 package br.com.alura.technews.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.asynctask.BaseAsyncTask
 import br.com.alura.technews.database.dao.NoticiaDAO
 import br.com.alura.technews.model.Noticia
@@ -10,13 +12,34 @@ class NoticiaRepository(
     private val dao: NoticiaDAO,
     private val webclient: NoticiaWebClient = NoticiaWebClient()
 ) {
+    //Esta informação da variavel e previamente carregada durante o uso da App, o componente LiveData ja faz a carga do objeto com os dados existentes antes de realizar uma nova busca
+    //o resource permite uma lista nula no caso de alguma inconsistencia na carga
+    private val noticiasEncontradas = MutableLiveData<Resource<List<Noticia>?>>();
 
-    fun buscaTodos(
-        quandoSucesso: (List<Noticia>) -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        buscaInterno(quandoSucesso)
-//        buscaNaApi(quandoSucesso, quandoFalha)
+    fun buscaTodos() : LiveData<Resource<List<Noticia>?>> {
+
+        buscaInterno(quandoSucesso = {novasNoticias ->
+            //quando sucesso passamos a lista de noticias
+            noticiasEncontradas.value = Resource(dado = novasNoticias)
+        })
+
+        buscaNaApi(quandoSucesso = {novasNoticias ->
+            noticiasEncontradas.value = Resource(dado = novasNoticias)
+        }, quandoFalha = {mensagemDeErro ->
+            //pego meu recurso atual
+            val resourceAtual = noticiasEncontradas.value
+            //verifico se a lista e diferente de nula significando que ja tenho informacoes previamente carregadas
+            val resourceCriado: Resource<List<Noticia>?> = if(resourceAtual != null){
+                Resource(dado = resourceAtual.dado, erro = mensagemDeErro)
+            }else{
+                //caso nao tenha nada na lista de erro eu seto somente a mensagem e a informacao do dado nula
+                Resource(dado = null, erro = mensagemDeErro)
+            }
+
+            noticiasEncontradas.value = resourceCriado
+        })
+
+        return noticiasEncontradas;
     }
 
     fun salva(

@@ -6,10 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br.com.alura.technews.model.Noticia
 import br.com.alura.technews.repository.NoticiaRepository
+import br.com.alura.technews.repository.Resource
 
 class ListaNoticiasViewModel(
     private val repository: NoticiaRepository
 ) : ViewModel() {
+    //caso ja tenha uma informacao o observer ja devolve rapidamente na segunda chamada.
+    private val liveData = MutableLiveData<List<Noticia>>()
 
     init{
         Log.i("ViewModel","criando viewModel")
@@ -21,13 +24,9 @@ class ListaNoticiasViewModel(
     }
 
     //sempre que disponibilizamos livedata devemos enviar somente a referencia para nao alterarem o objeto
-    fun buscaTodos() : LiveData<List<Noticia>> {
-        //mutablelivedata temos acesso a leitura e a escrita
-        val liveData = MutableLiveData<List<Noticia>>()
-        repository.buscaTodos(quandoSucesso = {noticiasNovas ->
-            liveData.value = noticiasNovas
-        }, quandoFalha={})
-        return liveData
+    fun buscaTodos() : LiveData<Resource<List<Noticia>?>> {
+        //retorna o liveData direto do repository
+        return repository.buscaTodos()
     }
 
 }
