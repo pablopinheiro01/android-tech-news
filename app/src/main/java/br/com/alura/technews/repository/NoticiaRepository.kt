@@ -36,11 +36,18 @@ class NoticiaRepository(
     }
 
     fun salva(
-        noticia: Noticia,
-        quandoSucesso: (noticiaNova: Noticia) -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        salvaNaApi(noticia, quandoSucesso, quandoFalha)
+        noticia: Noticia
+    ) : LiveData<Resource<Void?>> {
+        //nesse caso nao precisamos criar uma property para manter o ultimo
+        //valor que estaria no livedata, nesse caso podemos sempre criar uma live data novo...
+        val liveData = MutableLiveData<Resource<Void?>>()
+        salvaNaApi(noticia, quandoSucesso = {
+            //aqui a intenção é apenas notificar entao eu posso criar um Resource null
+            liveData.value = Resource(null)
+        }, quandoFalha = {erro ->
+            liveData.value = Resource(dado = null,erro = erro)
+        })
+        return liveData
     }
 
     fun remove(
@@ -85,7 +92,7 @@ class NoticiaRepository(
     private fun buscaInterno(quandoSucesso: (List<Noticia>) -> Unit) {
         BaseAsyncTask(quandoExecuta = {
             Log.i("teste", "buscando noticias no banco")
-            Thread.sleep(5000)
+//            Thread.sleep(5000)
             dao.buscaTodos()
         }, quandoFinaliza = {noticiasNovas ->
             Log.i("teste", "finalizou a busca")
