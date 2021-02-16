@@ -74,6 +74,7 @@ class ListaNoticiasActivity: AppCompatActivity() {
     private fun buscaNoticias() {
         viewModel.buscaTodos(
             quandoSucesso = {
+                Log.i("teste", "atualizando noticias")
                 adapter.atualiza(it)
             }, quandoFalha = {
                 mostraErro(MENSAGEM_FALHA_CARREGAR_NOTICIAS)
