@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -72,14 +73,20 @@ class ListaNoticiasActivity: AppCompatActivity() {
     }
 
     private fun buscaNoticias() {
-        viewModel.buscaTodos(
-            quandoSucesso = {
-                Log.i("teste", "atualizando noticias")
-                adapter.atualiza(it)
-            }, quandoFalha = {
-                mostraErro(MENSAGEM_FALHA_CARREGAR_NOTICIAS)
-            }
-        )
+        //quando chamamos o liveData temos acesso as suas funções, no caso o livedata esta atrelado ao observe que e retornado no buscatodos
+        //1º parametro - a interface LifeCycleOwner ja e implementado automaticamente por Activits e Fragments
+        viewModel.buscaTodos().observe(this, Observer {
+            Log.i("teste", "Objeto atualizado")
+            //indico o objeto atualizado
+            adapter.atualiza(it)
+        })
+        //anteriormente implementavamos o tratamento do sucesso e do erro na activity, essa responsabilidade foi transferida para a ViewModel utilizando LiveData
+        //            quandoSucesso = {
+//                Log.i("teste", "atualizando noticias")
+//                adapter.atualiza(it)
+//            }, quandoFalha = {
+//                mostraErro(MENSAGEM_FALHA_CARREGAR_NOTICIAS)
+//            }
     }
 
     private fun abreFormularioModoCriacao() {

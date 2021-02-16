@@ -16,7 +16,7 @@ class NoticiaRepository(
         quandoFalha: (erro: String?) -> Unit
     ) {
         buscaInterno(quandoSucesso)
-        buscaNaApi(quandoSucesso, quandoFalha)
+//        buscaNaApi(quandoSucesso, quandoFalha)
     }
 
     fun salva(
@@ -71,14 +71,11 @@ class NoticiaRepository(
             Log.i("teste", "buscando noticias no banco")
             Thread.sleep(5000)
             dao.buscaTodos()
-        }, quandoFinaliza = {
+        }, quandoFinaliza = {noticiasNovas ->
             Log.i("teste", "finalizou a busca")
-            quandoSucesso
-        })
-            .execute()
+            quandoSucesso(noticiasNovas)
+        }).execute()
     }
-
-
 
     private fun salvaNaApi(
         noticia: Noticia,
