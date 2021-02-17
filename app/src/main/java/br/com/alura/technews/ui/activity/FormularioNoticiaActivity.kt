@@ -58,21 +58,14 @@ class FormularioNoticiaActivity : AppCompatActivity() {
     private fun preencheFormulario() {
 
         Log.i("buscaporid", "buscando a noticia...")
-        viewModel.buscaPorId(noticiaId).observe(this, Observer { noticiaEncontrada: Resource<Noticia?> ->
+        viewModel.buscaPorId(noticiaId).observe(this, Observer { noticiaEncontrada ->
             Log.i("buscaporid","Entrou no observer com a noticia de id: "+noticiaId)
-            if(noticiaEncontrada.dado != null){
-                Log.i("buscaporid","valor do dado encontrado: "+noticiaEncontrada.dado)
-                Log.i("buscaporid","valor do titulo encontrado: "+noticiaEncontrada.dado.titulo)
-                Log.i("buscaporid","valor do texto encontrado: "+noticiaEncontrada.dado.texto)
+            if(noticiaEncontrada != null){
+                Log.i("buscaporid","valor do titulo encontrado: "+noticiaEncontrada.titulo)
+                Log.i("buscaporid","valor do texto encontrado: "+noticiaEncontrada.texto)
             }
         })
 
-//        repository.buscaPorId(noticiaId, quandoSucesso = { noticiaEncontrada ->
-//            if (noticiaEncontrada != null) {
-//                activity_formulario_noticia_titulo.setText(noticiaEncontrada.titulo)
-//                activity_formulario_noticia_texto.setText(noticiaEncontrada.texto)
-//            }
-//        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

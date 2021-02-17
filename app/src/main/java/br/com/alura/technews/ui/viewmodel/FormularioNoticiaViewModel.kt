@@ -20,7 +20,7 @@ class FormularioNoticiaViewModel(
         return repository.salva(noticia)
     }
 
-    fun buscaPorId(noticiaId: Long): LiveData<Resource<Noticia?>> {
+    fun buscaPorId(noticiaId: Long): LiveData<Noticia?> {
         Log.i("buscaporid","entramos no buscaPorId da ViewModel")
         return repository.buscaPorId(noticiaId)
     }

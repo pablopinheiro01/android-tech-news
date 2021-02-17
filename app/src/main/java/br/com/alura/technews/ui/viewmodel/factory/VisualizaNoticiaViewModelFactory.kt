@@ -8,11 +8,12 @@ import br.com.alura.technews.ui.viewmodel.ListaNoticiasViewModel
 import br.com.alura.technews.ui.viewmodel.VisualizaNoticiaViewModel
 
 class VisualizaNoticiaViewModelFactory (
+    private val id : Long,
     private val repository: NoticiaRepository
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         //aqui criamos a instancia que tera o repository que sera utilizado na View da Lista
-        return VisualizaNoticiaViewModel(repository) as T
+        return VisualizaNoticiaViewModel(id, repository) as T
     }
 }

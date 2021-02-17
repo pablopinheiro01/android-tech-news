@@ -15,9 +15,7 @@ import br.com.alura.technews.model.Noticia
 import br.com.alura.technews.repository.NoticiaRepository
 import br.com.alura.technews.repository.Resource
 import br.com.alura.technews.ui.activity.extensions.mostraErro
-import br.com.alura.technews.ui.viewmodel.FormularioNoticiaViewModel
 import br.com.alura.technews.ui.viewmodel.VisualizaNoticiaViewModel
-import br.com.alura.technews.ui.viewmodel.factory.FormularioNoticiaViewModelFactory
 import br.com.alura.technews.ui.viewmodel.factory.VisualizaNoticiaViewModelFactory
 import kotlinx.android.synthetic.main.activity_formulario_noticia.*
 import kotlinx.android.synthetic.main.activity_visualiza_noticia.*
@@ -36,8 +34,8 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
 //    }
 
     private val viewModel by lazy{
-        val noticiaRepository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
-        val factory = VisualizaNoticiaViewModelFactory(noticiaRepository)
+        val repository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
+        val factory = VisualizaNoticiaViewModelFactory(noticiaId, repository)
         ViewModelProviders.of(this, factory).get(VisualizaNoticiaViewModel::class.java)
     }
 
@@ -71,27 +69,13 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
     private fun buscaNoticiaSelecionada() {
 
         Log.i("buscaporid","buscando a noticia no fluxo de visualizacao...")
-        viewModel.buscaPorId(noticiaId).observe(this, Observer{ noticiaEncontrada: Resource<Noticia?> ->
-            Log.i("buscaporid","Entrou no observer com a noticia de id: "+noticiaId)
-            if(noticiaEncontrada.dado != null){
-                val titulo: String = noticiaEncontrada.dado.titulo
-                val texto: String = noticiaEncontrada.dado.texto
-
-                Log.i("buscaporid","valor do dado encontrado: "+noticiaEncontrada.dado)
-                Log.i("buscaporid","valor do titulo encontrado: "+titulo)
-                Log.i("buscaporid","valor do texto encontrado: "+texto)
-
-                activity_formulario_noticia_titulo.setText(titulo.toString())
-                activity_formulario_noticia_texto.setText(texto.toString())
+        viewModel.buscaPorId().observe(this, Observer{ noticiaEncontrada: Noticia? ->
+            Log.i("buscaporid","Entrou no observer")
+            noticiaEncontrada?.let {
+                this.noticia = it
+                preencheCampos(it)
             }
         })
-
-//        repository.buscaPorId(noticiaId, quandoSucesso = { noticiaEncontrada ->
-//            noticiaEncontrada?.let {
-//                this.noticia = it
-//                preencheCampos(it)
-//            }
-//        })
     }
 
     private fun verificaIdDaNoticia() {
@@ -106,15 +90,19 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
         activity_visualiza_noticia_texto.text = noticia.texto
     }
 
-//    private fun remove() {
-//        if (::noticia.isInitialized) {
-//            repository.remove(noticia, quandoSucesso = {
-//                finish()
-//            }, quandoFalha = {
-//                mostraErro(MENSAGEM_FALHA_REMOCAO)
-//            })
-//        }
-//    }
+    private fun remove() {
+        if (::noticia.isInitialized) {
+
+            viewModel.remove().observe(this, Observer {
+                if(it.erro == null){
+                    finish()
+                }else{
+                    mostraErro(MENSAGEM_FALHA_REMOCAO)
+                }
+            })
+
+        }
+    }
 
     private fun abreFormularioEdicao() {
         val intent = Intent(this, FormularioNoticiaActivity::class.java)

@@ -51,11 +51,16 @@ class NoticiaRepository(
     }
 
     fun remove(
-        noticia: Noticia,
-        quandoSucesso: () -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        removeNaApi(noticia, quandoSucesso, quandoFalha)
+        noticia: Noticia
+    ): LiveData<Resource<Void?>> {
+        val liveData = MutableLiveData<Resource<Void?>>()
+        removeNaApi(noticia, quandoSucesso = {
+            liveData.value = Resource(null)
+        },
+        quandoFalha = {
+            liveData.value = Resource(null, it)
+        })
+        return liveData
     }
 
     fun edita(
@@ -66,43 +71,28 @@ class NoticiaRepository(
         editaNaApi(noticia, quandoSucesso = {
             //aqui a intenção é apenas notificar entao eu posso criar um Resource null
             liveData.value = Resource(null)
-        }, quandoFalha = {erro ->
+        }, quandoFalha = { erro ->
             liveData.value = Resource(dado = null,erro = erro)
         })
         return liveData
 
     }
 
-    fun buscaPorId(
-        noticiaId: Long
-    ): LiveData<Resource<Noticia?>>{
-        val liveData = MutableLiveData<Resource<Noticia?>>()
-        buscaPorIdInterno(noticiaId, quandoSucesso = {
-            Log.i("buscaporid","quandosucesso recebemos o seguinte valor: "+it.texto)
-            liveData.value = Resource(it)
-        }, quandoFalha = {
-            Log.i("buscaporid","quandoFalha encontramos o seguinte erro: "+it.toString())
-            liveData.value = Resource(null,it)
-        }
-        )
-        Log.i("buscaporid","retornando do metodo buscaPorId")
-        return liveData
-    }
 
-    private fun buscaPorIdInterno(noticiaId: Long, quandoSucesso: (Noticia) -> Unit, quandoFalha: (erro: String?) -> Unit){
+    fun buscaPorId(noticiaId: Long): LiveData<Noticia?>{
         Log.i("buscaporid","Entramos em buscaPorIdInterno")
+
+        val liveData = MutableLiveData<Noticia?>()
+
         BaseAsyncTask(quandoExecuta = {
             val dado = dao.buscaPorId(noticiaId)
             Log.i("buscaporid","dado encontrado:"+dado.toString())
             dado
         }, quandoFinaliza = {
-            if (it != null) {
-                Log.i("buscaporid","entramos em finalizacao e retornando sucesso")
-                quandoSucesso(it)
-            }
-            quandoFalha("Erro ao buscar por Id Interno")
-        })
-            .execute()
+           liveData.value = it
+        }).execute()
+
+        return liveData
     }
 
     private fun buscaNaApi(
