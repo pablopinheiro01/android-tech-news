@@ -12,7 +12,8 @@ import br.com.alura.technews.retrofit.webclient.NoticiaWebClient
 
 class NoticiaRepository(
     private val dao: NoticiaDAO,
-    private val webclient: NoticiaWebClient = NoticiaWebClient()
+    //este objeto sera injetado automaticamente pelo koin
+    private val webclient: NoticiaWebClient
 ) {
 
     private val mediadorLiveData = MediatorLiveData<Resource<List<Noticia>?>>()

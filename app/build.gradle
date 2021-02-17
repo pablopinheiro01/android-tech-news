@@ -31,16 +31,34 @@ android {
     }
 }
 
+// Add Jcenter to your repositories if needed
+repositories {
+    jcenter()
+}
+
 dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     def room_version = "2.0.0"
 
     def lifecycle_version = "2.2.0"
+    def koin_version = '2.2.2'
 
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    // Koin for Kotlin apps
+    // Testing
+    androidTestImplementation "org.koin:koin-test:$koin_version"
+    // Koin for Android
+    implementation "org.koin:koin-android:$koin_version"
+    // Koin Android Scope features
+    implementation "org.koin:koin-android-scope:$koin_version"
+    // Koin Android ViewModel features
+    implementation "org.koin:koin-android-viewmodel:$koin_version"
+    // Koin Android Experimental features
+    implementation "org.koin:koin-android-ext:$koin_version"
 
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"

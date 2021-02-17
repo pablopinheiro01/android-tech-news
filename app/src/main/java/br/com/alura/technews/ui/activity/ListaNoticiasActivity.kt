@@ -17,25 +17,32 @@ import br.com.alura.technews.ui.recyclerview.adapter.ListaNoticiasAdapter
 import br.com.alura.technews.ui.viewmodel.ListaNoticiasViewModel
 import br.com.alura.technews.ui.viewmodel.factory.ListaNoticiasViewModelFactory
 import kotlinx.android.synthetic.main.activity_lista_noticias.*
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 private const val TITULO_APPBAR = "Notícias"
 private const val MENSAGEM_FALHA_CARREGAR_NOTICIAS = "Não foi possível carregar as novas notícias"
 
 class ListaNoticiasActivity: AppCompatActivity() {
 
+//    private val database by inject<AppDatabase>()
+//    private val noticiasRepository: NoticiaRepository by inject()
     private val adapter by lazy {
         ListaNoticiasAdapter(context = this)
     }
 
-    private val viewModel by lazy {
-        //factory de noticias repository desvincula a necessidade de vinculo da activity
-        val noticiasRepository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
-        //crio factory da view com o repository
-        val factory = ListaNoticiasViewModelFactory(noticiasRepository)
-        val provedor = ViewModelProviders.of(this, factory)
-        //nao esta vinculado diretamente a activity e a ultima instrucao ja retorna
-        provedor.get(ListaNoticiasViewModel::class.java)
-    }
+    private val viewModel:ListaNoticiasViewModel by viewModel<ListaNoticiasViewModel>()
+//    private val viewModel by lazy {
+//        //factory de noticias repository desvincula a necessidade de vinculo da activity
+////        val noticiasRepository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
+//        //injetando o dao via KOIN
+////        val noticiasRepository = NoticiaRepository(database.noticiaDAO)
+//        //crio factory da view com o repository
+//        val factory = ListaNoticiasViewModelFactory(noticiasRepository)
+//        val provedor = ViewModelProviders.of(this, factory)
+//        //nao esta vinculado diretamente a activity e a ultima instrucao ja retorna
+//        provedor.get(ListaNoticiasViewModel::class.java)
+//    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
