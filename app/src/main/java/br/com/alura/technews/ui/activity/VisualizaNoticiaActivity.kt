@@ -13,11 +13,9 @@ import br.com.alura.technews.R
 import br.com.alura.technews.database.AppDatabase
 import br.com.alura.technews.model.Noticia
 import br.com.alura.technews.repository.NoticiaRepository
-import br.com.alura.technews.repository.Resource
 import br.com.alura.technews.ui.activity.extensions.mostraErro
 import br.com.alura.technews.ui.viewmodel.VisualizaNoticiaViewModel
 import br.com.alura.technews.ui.viewmodel.factory.VisualizaNoticiaViewModelFactory
-import kotlinx.android.synthetic.main.activity_formulario_noticia.*
 import kotlinx.android.synthetic.main.activity_visualiza_noticia.*
 
 private const val NOTICIA_NAO_ENCONTRADA = "Notícia não encontrada"
@@ -29,9 +27,6 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
     private val noticiaId: Long by lazy {
         intent.getLongExtra(NOTICIA_ID_CHAVE, 0)
     }
-//    private val repository by lazy {
-//        NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
-//    }
 
     private val viewModel by lazy{
         val repository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
@@ -48,13 +43,6 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
         verificaIdDaNoticia()
         buscaNoticiaSelecionada()
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //a busca vai ser feita na criação devido a lista tratar toda atualizacao conforme mapeado no LiveData
-        //devemos mapear o objeto do banco de dados como singleton para o uso de toda a aplicação
-        //buscaNoticiaSelecionada()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

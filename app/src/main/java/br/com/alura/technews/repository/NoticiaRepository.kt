@@ -14,9 +14,6 @@ class NoticiaRepository(
     private val dao: NoticiaDAO,
     private val webclient: NoticiaWebClient = NoticiaWebClient()
 ) {
-    //Esta informação da variavel e previamente carregada durante o uso da App, o componente LiveData ja faz a carga do objeto com os dados existentes antes de realizar uma nova busca
-    //o resource permite uma lista nula no caso de alguma inconsistencia na carga
-//    private val noticiasEncontradas = MutableLiveData<Resource<List<Noticia>?>>();
 
     private val mediadorLiveData = MediatorLiveData<Resource<List<Noticia>?>>()
 
@@ -50,20 +47,6 @@ class NoticiaRepository(
 
         return mediadorLiveData;
 
-//        val atualizaListaDeNoticias: (List<Noticia>) -> Unit = { novasNoticias ->
-//            //quando sucesso passamos a lista de noticias
-//            noticiasEncontradas.value = Resource(dado = novasNoticias)
-//        }
-
-//        buscaInterno(quandoSucesso = atualizaListaDeNoticias)
-//        noticiasEncontradas.value = buscaInterno().
-//        buscaNaApi(quandoSucesso = atualizaListaDeNoticias, quandoFalha = { erro ->
-//            //pego meu recurso atual
-//            val resourceAtual = noticiasEncontradas.value
-//            //verifico se a lista e diferente de nula significando que ja tenho informacoes previamente carregadas
-//            val resourceDeFalha = criaResourceDeFalha(resourceAtual, erro)
-//            noticiasEncontradas.value = resourceDeFalha
-//        })
     }
 
     fun salva(
@@ -113,16 +96,6 @@ class NoticiaRepository(
     fun buscaPorId(noticiaId: Long): LiveData<Noticia?>{
         Log.i("buscaporid","Entramos em buscaPorIdInterno")
         return dao.buscaPorId(noticiaId)
-        //toda essa responsabilidade sera transferida para o LiveData conforme mapeado no DAO
-//        val liveData = MutableLiveData<Noticia?>()
-//        BaseAsyncTask(quandoExecuta = {
-//            val dado = dao.buscaPorId(noticiaId)
-//            Log.i("buscaporid","dado encontrado:"+dado.toString())
-//            dado
-//        }, quandoFinaliza = {
-//           liveData.value = it
-//        }).execute()
-//        return liveData
 
     }
 
@@ -142,15 +115,6 @@ class NoticiaRepository(
 
         //retorna o liveData
         return dao.buscaTodos()
-//passado a responsabilidade de busca e atualizacao das fontes atraves do singleton da base, e passado a responsabilidade para o LiveData gerenciar as devidas atualizacoes
-//        BaseAsyncTask(quandoExecuta = {
-//            Log.i("teste", "buscando noticias no banco")
-////            Thread.sleep(5000)
-//            dao.buscaTodos()
-//        }, quandoFinaliza = {noticiasNovas ->
-//            Log.i("teste", "finalizou a busca")
-//            quandoSucesso(noticiasNovas)
-//        }).execute()
     }
 
     private fun salvaNaApi(

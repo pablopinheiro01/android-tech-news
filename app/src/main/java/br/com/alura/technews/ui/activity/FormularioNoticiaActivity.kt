@@ -29,10 +29,6 @@ class FormularioNoticiaActivity : AppCompatActivity() {
         intent.getLongExtra(NOTICIA_ID_CHAVE, 0)
     }
 
-//    private val repository by lazy {
-//        NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
-//    }
-
     private val viewModel by lazy{
         val noticiaRepository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
         val factory = FormularioNoticiaViewModelFactory(noticiaRepository)

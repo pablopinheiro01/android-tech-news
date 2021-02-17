@@ -10,8 +10,6 @@ import br.com.alura.technews.repository.Resource
 class FormularioNoticiaViewModel(
     private val repository: NoticiaRepository
 ) : ViewModel() {
-
-
     //posso enviar um valor nulo e notificar se teve erro, caso teve eu mostro caso nao eu apenas finalizo
     fun salva(noticia: Noticia): LiveData<Resource<Void?>> {
         if (noticia.id > 0) {
