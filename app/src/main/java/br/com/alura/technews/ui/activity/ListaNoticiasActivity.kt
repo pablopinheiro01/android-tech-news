@@ -44,6 +44,7 @@ class ListaNoticiasActivity: AppCompatActivity() {
         title = TITULO_APPBAR
         configuraRecyclerView()
         configuraFabAdicionaNoticia()
+        buscaNoticias()
     }
 
     //utilizamos toda as chamadas da base de dados no onResume

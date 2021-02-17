@@ -63,6 +63,8 @@ class FormularioNoticiaActivity : AppCompatActivity() {
             if(noticiaEncontrada != null){
                 Log.i("buscaporid","valor do titulo encontrado: "+noticiaEncontrada.titulo)
                 Log.i("buscaporid","valor do texto encontrado: "+noticiaEncontrada.texto)
+                activity_formulario_noticia_texto.setText(noticiaEncontrada.texto)
+                activity_formulario_noticia_titulo.setText(noticiaEncontrada.titulo)
             }
         })
 

@@ -65,7 +65,7 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.visualiza_noticia_menu_edita -> abreFormularioEdicao()
-//            R.id.visualiza_noticia_menu_remove -> remove()
+            R.id.visualiza_noticia_menu_remove -> remove()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -73,7 +73,8 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
     private fun buscaNoticiaSelecionada() {
 
         Log.i("buscaporid","buscando a noticia no fluxo de visualizacao...")
-        viewModel.buscaPorId().observe(this, Observer{ noticiaEncontrada: Noticia? ->
+        //acesso o objeto noticia encontrada atualizada diretamente pelo LiveData
+        viewModel.noticiaEncontrada.observe(this, Observer{ noticiaEncontrada: Noticia? ->
             Log.i("buscaporid","Entrou no observer")
             noticiaEncontrada?.let {
                 this.noticia = it
