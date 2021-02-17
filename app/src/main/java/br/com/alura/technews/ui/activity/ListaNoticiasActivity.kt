@@ -50,7 +50,7 @@ class ListaNoticiasActivity: AppCompatActivity() {
     //single source of throught - unica fonte de verdade - tecnica recomendada na arquitetura de desenvolvimento de app.
     override fun onResume() {
         super.onResume()
-        buscaNoticias()
+//        buscaNoticias()
     }
 
     private fun configuraFabAdicionaNoticia() {

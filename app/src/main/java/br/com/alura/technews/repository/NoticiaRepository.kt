@@ -2,7 +2,9 @@ package br.com.alura.technews.repository
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import br.com.alura.technews.asynctask.BaseAsyncTask
 import br.com.alura.technews.database.dao.NoticiaDAO
 import br.com.alura.technews.model.Noticia
@@ -14,25 +16,54 @@ class NoticiaRepository(
 ) {
     //Esta informação da variavel e previamente carregada durante o uso da App, o componente LiveData ja faz a carga do objeto com os dados existentes antes de realizar uma nova busca
     //o resource permite uma lista nula no caso de alguma inconsistencia na carga
-    private val noticiasEncontradas = MutableLiveData<Resource<List<Noticia>?>>();
+//    private val noticiasEncontradas = MutableLiveData<Resource<List<Noticia>?>>();
+
+    private val mediadorLiveData = MediatorLiveData<Resource<List<Noticia>?>>()
 
     fun buscaTodos() : LiveData<Resource<List<Noticia>?>> {
 
-        val atualizaListaDeNoticias: (List<Noticia>) -> Unit = { novasNoticias ->
-            //quando sucesso passamos a lista de noticias
-            noticiasEncontradas.value = Resource(dado = novasNoticias)
-        }
-        buscaInterno(quandoSucesso = atualizaListaDeNoticias)
-
-        buscaNaApi(quandoSucesso = atualizaListaDeNoticias, quandoFalha = { erro ->
-            //pego meu recurso atual
-            val resourceAtual = noticiasEncontradas.value
-            //verifico se a lista e diferente de nula significando que ja tenho informacoes previamente carregadas
-            val resourceDeFalha = criaResourceDeFalha(resourceAtual, erro)
-            noticiasEncontradas.value = resourceDeFalha
+        //adiciono arquivo do liveData que sera monitorado
+        mediadorLiveData.addSource(buscaInterno(), Observer { noticias ->
+            mediadorLiveData.value = Resource(dado = noticias)
         })
 
-        return noticiasEncontradas;
+        //essa variavel sera preenchida somente no caso de erro, o MutableLiveData monitora as requisições de LiveData
+        val falhaDaWebApiLiveData = MutableLiveData<Resource<List<Noticia>?>>()
+        //mediador vai monitorar 2 lives data
+        mediadorLiveData.addSource(falhaDaWebApiLiveData){
+            //agora so trato o resource de falha caso ocorra
+            resourceDeFalha ->
+            val resourceAtual = mediadorLiveData.value
+            //verifico se o meu resource atual é diferente de nulo, caso sim eu recebi um erro mas com dados ja existentes conforme o Resource criado
+            val resourceNovo: Resource<List<Noticia>?> = if (resourceAtual != null){
+                Resource(dado = resourceAtual.dado, erro = resourceDeFalha.erro)
+            }else{
+                //caso contrario contem somente o erro entao eu devolvo a informação
+                resourceDeFalha
+            }
+            mediadorLiveData.value = resourceNovo
+        }
+
+        ///busca na API e so devolve um HOF no caso de erro.
+        buscaNaApi(quandoFalha = { erro -> falhaDaWebApiLiveData.value = Resource(dado = null, erro = erro)})
+
+
+        return mediadorLiveData;
+
+//        val atualizaListaDeNoticias: (List<Noticia>) -> Unit = { novasNoticias ->
+//            //quando sucesso passamos a lista de noticias
+//            noticiasEncontradas.value = Resource(dado = novasNoticias)
+//        }
+
+//        buscaInterno(quandoSucesso = atualizaListaDeNoticias)
+//        noticiasEncontradas.value = buscaInterno().
+//        buscaNaApi(quandoSucesso = atualizaListaDeNoticias, quandoFalha = { erro ->
+//            //pego meu recurso atual
+//            val resourceAtual = noticiasEncontradas.value
+//            //verifico se a lista e diferente de nula significando que ja tenho informacoes previamente carregadas
+//            val resourceDeFalha = criaResourceDeFalha(resourceAtual, erro)
+//            noticiasEncontradas.value = resourceDeFalha
+//        })
     }
 
     fun salva(
@@ -96,27 +127,30 @@ class NoticiaRepository(
     }
 
     private fun buscaNaApi(
-        quandoSucesso: (List<Noticia>) -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {
         webclient.buscaTodas(
             quandoSucesso = { noticiasNovas ->
                 noticiasNovas?.let {
-                    salvaInterno(noticiasNovas, quandoSucesso)
+                    salvaInterno(noticiasNovas)
                 }
             }, quandoFalha = quandoFalha
         )
     }
 
-    private fun buscaInterno(quandoSucesso: (List<Noticia>) -> Unit) {
-        BaseAsyncTask(quandoExecuta = {
-            Log.i("teste", "buscando noticias no banco")
-//            Thread.sleep(5000)
-            dao.buscaTodos()
-        }, quandoFinaliza = {noticiasNovas ->
-            Log.i("teste", "finalizou a busca")
-            quandoSucesso(noticiasNovas)
-        }).execute()
+    private fun buscaInterno(): LiveData<List<Noticia>> {
+
+        //retorna o liveData
+        return dao.buscaTodos()
+//passado a responsabilidade de busca e atualizacao das fontes atraves do singleton da base, e passado a responsabilidade para o LiveData gerenciar as devidas atualizacoes
+//        BaseAsyncTask(quandoExecuta = {
+//            Log.i("teste", "buscando noticias no banco")
+////            Thread.sleep(5000)
+//            dao.buscaTodos()
+//        }, quandoFinaliza = {noticiasNovas ->
+//            Log.i("teste", "finalizou a busca")
+//            quandoSucesso(noticiasNovas)
+//        }).execute()
     }
 
     private fun salvaNaApi(
@@ -134,15 +168,12 @@ class NoticiaRepository(
         )
     }
 
-    private fun salvaInterno(
-        noticias: List<Noticia>,
-        quandoSucesso: (noticiasNovas: List<Noticia>) -> Unit
-    ) {
+    private fun salvaInterno(noticias: List<Noticia>) {
         BaseAsyncTask(
             quandoExecuta = {
                 dao.salva(noticias)
-                dao.buscaTodos()
-            }, quandoFinaliza = quandoSucesso
+//                dao.buscaTodos()
+            }, quandoFinaliza = {}
         ).execute()
     }
 
