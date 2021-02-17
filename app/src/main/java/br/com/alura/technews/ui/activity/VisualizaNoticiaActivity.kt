@@ -46,11 +46,15 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
         setContentView(R.layout.activity_visualiza_noticia)
         title = TITULO_APPBAR
         verificaIdDaNoticia()
+        buscaNoticiaSelecionada()
+
     }
 
     override fun onResume() {
         super.onResume()
-        buscaNoticiaSelecionada()
+        //a busca vai ser feita na criação devido a lista tratar toda atualizacao conforme mapeado no LiveData
+        //devemos mapear o objeto do banco de dados como singleton para o uso de toda a aplicação
+        //buscaNoticiaSelecionada()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

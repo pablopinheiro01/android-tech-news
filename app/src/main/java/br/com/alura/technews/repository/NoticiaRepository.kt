@@ -81,18 +81,18 @@ class NoticiaRepository(
 
     fun buscaPorId(noticiaId: Long): LiveData<Noticia?>{
         Log.i("buscaporid","Entramos em buscaPorIdInterno")
+        return dao.buscaPorId(noticiaId)
+        //toda essa responsabilidade sera transferida para o LiveData conforme mapeado no DAO
+//        val liveData = MutableLiveData<Noticia?>()
+//        BaseAsyncTask(quandoExecuta = {
+//            val dado = dao.buscaPorId(noticiaId)
+//            Log.i("buscaporid","dado encontrado:"+dado.toString())
+//            dado
+//        }, quandoFinaliza = {
+//           liveData.value = it
+//        }).execute()
+//        return liveData
 
-        val liveData = MutableLiveData<Noticia?>()
-
-        BaseAsyncTask(quandoExecuta = {
-            val dado = dao.buscaPorId(noticiaId)
-            Log.i("buscaporid","dado encontrado:"+dado.toString())
-            dado
-        }, quandoFinaliza = {
-           liveData.value = it
-        }).execute()
-
-        return liveData
     }
 
     private fun buscaNaApi(
@@ -121,7 +121,7 @@ class NoticiaRepository(
 
     private fun salvaNaApi(
         noticia: Noticia,
-        quandoSucesso: (noticiaNova: Noticia) -> Unit,
+        quandoSucesso: () -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {
         webclient.salva(
@@ -148,14 +148,14 @@ class NoticiaRepository(
 
     private fun salvaInterno(
         noticia: Noticia,
-        quandoSucesso: (noticiaNova: Noticia) -> Unit
+        quandoSucesso: () -> Unit
     ) {
         BaseAsyncTask(quandoExecuta = {
             dao.salva(noticia)
             dao.buscaPorId(noticia.id)
         }, quandoFinaliza = { noticiaEncontrada ->
             noticiaEncontrada?.let {
-                quandoSucesso(it)
+                quandoSucesso()
             }
         }).execute()
 
@@ -189,7 +189,7 @@ class NoticiaRepository(
 
     private fun editaNaApi(
         noticia: Noticia,
-        quandoSucesso: (noticiaEditada: Noticia) -> Unit,
+        quandoSucesso: () -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {
         webclient.edita(

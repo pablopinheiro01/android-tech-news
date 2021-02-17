@@ -46,6 +46,8 @@ class ListaNoticiasActivity: AppCompatActivity() {
         configuraFabAdicionaNoticia()
     }
 
+    //utilizamos toda as chamadas da base de dados no onResume
+    //single source of throught - unica fonte de verdade - tecnica recomendada na arquitetura de desenvolvimento de app.
     override fun onResume() {
         super.onResume()
         buscaNoticias()
