@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.alura.technews.R
 import br.com.alura.technews.model.Noticia
+import br.com.alura.technews.ui.activity.ListaNoticiasActivity
 import br.com.alura.technews.ui.fragment.extensions.mostraErro
 import br.com.alura.technews.ui.recyclerview.adapter.ListaNoticiasAdapter
 import br.com.alura.technews.ui.viewmodel.ListaNoticiasViewModel
@@ -31,13 +32,18 @@ class ListaNoticiasFragment : Fragment() {
 
     var quandoFabSalvaNoticiaClicada: () -> Unit = {}
     var quandoNoticiaSelecionada: (noticia: Noticia) -> Unit = {}
-    
+
+    lateinit var listener: IListaNoticiasFragment
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //aqui nao criamos a View, apenas fazemos inicializações,
         //para view é utilizado outro conceito nos fragments
 
         buscaNoticias()
+
+        listener = activity as ListaNoticiasActivity
     }
 
     override fun onCreateView(
@@ -56,7 +62,8 @@ class ListaNoticiasFragment : Fragment() {
 
     private fun configuraFabAdicionaNoticia() {
         lista_noticias_fab_salva_noticia.setOnClickListener {
-            quandoFabSalvaNoticiaClicada()
+//            quandoFabSalvaNoticiaClicada()
+            listener.quandoFabSalvaNoticiaClicada()
         }
     }
 
@@ -68,7 +75,8 @@ class ListaNoticiasFragment : Fragment() {
     }
 
     private fun configuraAdapter() {
-        adapter?.quandoItemClicado = quandoNoticiaSelecionada
+//        adapter?.quandoItemClicado = quandoNoticiaSelecionada
+        adapter?.quandoItemClicado = listener::quandoNoticiaSelecionada
     }
 
     private fun buscaNoticias() {
@@ -87,5 +95,9 @@ class ListaNoticiasFragment : Fragment() {
 
     }
 
+    interface IListaNoticiasFragment{
+        fun quandoFabSalvaNoticiaClicada()
+        fun quandoNoticiaSelecionada(noticia: Noticia)
+    }
 
 }
