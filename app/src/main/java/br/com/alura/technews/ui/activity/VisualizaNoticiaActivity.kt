@@ -8,16 +8,10 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import br.com.alura.technews.R
-import br.com.alura.technews.database.AppDatabase
 import br.com.alura.technews.model.Noticia
-import br.com.alura.technews.repository.NoticiaRepository
-import br.com.alura.technews.ui.activity.extensions.mostraErro
 import br.com.alura.technews.ui.viewmodel.VisualizaNoticiaViewModel
-import br.com.alura.technews.ui.viewmodel.factory.VisualizaNoticiaViewModelFactory
 import kotlinx.android.synthetic.main.activity_visualiza_noticia.*
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -84,7 +78,9 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
 
     private fun verificaIdDaNoticia() {
         if (noticiaId == 0L) {
-            mostraErro(NOTICIA_NAO_ENCONTRADA)
+            br.com.alura.technews.ui.fragment.extensions.mostraErro(
+                NOTICIA_NAO_ENCONTRADA
+            )
             finish()
         }
     }
@@ -101,7 +97,9 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
                 if(it.erro == null){
                     finish()
                 }else{
-                    mostraErro(MENSAGEM_FALHA_REMOCAO)
+                    br.com.alura.technews.ui.fragment.extensions.mostraErro(
+                        MENSAGEM_FALHA_REMOCAO
+                    )
                 }
             })
 

@@ -6,19 +6,10 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import br.com.alura.technews.R
-import br.com.alura.technews.database.AppDatabase
 import br.com.alura.technews.model.Noticia
-import br.com.alura.technews.repository.NoticiaRepository
-import br.com.alura.technews.repository.Resource
-import br.com.alura.technews.ui.activity.extensions.mostraErro
 import br.com.alura.technews.ui.viewmodel.FormularioNoticiaViewModel
-import br.com.alura.technews.ui.viewmodel.factory.FormularioNoticiaViewModelFactory
 import kotlinx.android.synthetic.main.activity_formulario_noticia.*
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 private const val TITULO_APPBAR_EDICAO = "Editando notícia"
@@ -99,7 +90,9 @@ class FormularioNoticiaActivity : AppCompatActivity() {
                 //funcao que a activity deve executar
                 finish()
             } else {
-                mostraErro(MENSAGEM_ERRO_SALVAR)
+                br.com.alura.technews.ui.fragment.extensions.mostraErro(
+                    MENSAGEM_ERRO_SALVAR
+                )
             }
         })
     }

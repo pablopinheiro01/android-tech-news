@@ -12,7 +12,7 @@ class ListaNoticiasViewModel(
     private val repository: NoticiaRepository
 ) : ViewModel() {
     //caso ja tenha uma informacao o observer ja devolve rapidamente na segunda chamada.
-    private val liveData = MutableLiveData<List<Noticia>>()
+//    private val liveData = MutableLiveData<List<Noticia>>()
 
     init{
         Log.i("ViewModel","criando viewModel")
