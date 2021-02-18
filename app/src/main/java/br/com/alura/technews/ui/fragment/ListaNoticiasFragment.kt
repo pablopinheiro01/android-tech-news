@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.lista_noticias.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.IllegalArgumentException
 
+private const val TITULO_APPBAR = "Notícias"
+
 private const val MENSAGEM_FALHA_CARREGAR_NOTICIAS = "Não foi possível carregar as novas notícias"
 
 class ListaNoticiasFragment : Fragment() {
@@ -37,8 +39,9 @@ class ListaNoticiasFragment : Fragment() {
         super.onCreate(savedInstanceState)
         //aqui nao criamos a View, apenas fazemos inicializações,
         //para view é utilizado outro conceito nos fragments
-
         buscaNoticias()
+        activity?.title = TITULO_APPBAR
+
     }
 
     override fun onCreateView(
@@ -49,10 +52,12 @@ class ListaNoticiasFragment : Fragment() {
         return inflater.inflate(R.layout.lista_noticias, container, false)
     }
 
+    //a view sempre vai ser criada independente se voce rotaciona o aparelho ou navega entre as telas
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configuraRecyclerView()
         configuraFabAdicionaNoticia()
+        activity?.title = TITULO_APPBAR
     }
 
     private fun configuraFabAdicionaNoticia() {
