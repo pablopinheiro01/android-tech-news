@@ -33,8 +33,6 @@ class ListaNoticiasFragment : Fragment() {
     var quandoFabSalvaNoticiaClicada: () -> Unit = {}
     var quandoNoticiaSelecionada: (noticia: Noticia) -> Unit = {}
 
-    lateinit var listener: IListaNoticiasFragment
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +40,6 @@ class ListaNoticiasFragment : Fragment() {
         //para view é utilizado outro conceito nos fragments
 
         buscaNoticias()
-
-        listener = activity as ListaNoticiasActivity
     }
 
     override fun onCreateView(
@@ -62,8 +58,7 @@ class ListaNoticiasFragment : Fragment() {
 
     private fun configuraFabAdicionaNoticia() {
         lista_noticias_fab_salva_noticia.setOnClickListener {
-//            quandoFabSalvaNoticiaClicada()
-            listener.quandoFabSalvaNoticiaClicada()
+            quandoFabSalvaNoticiaClicada()
         }
     }
 
@@ -75,8 +70,7 @@ class ListaNoticiasFragment : Fragment() {
     }
 
     private fun configuraAdapter() {
-//        adapter?.quandoItemClicado = quandoNoticiaSelecionada
-        adapter?.quandoItemClicado = listener::quandoNoticiaSelecionada
+        adapter?.quandoItemClicado = quandoNoticiaSelecionada
     }
 
     private fun buscaNoticias() {
@@ -93,11 +87,6 @@ class ListaNoticiasFragment : Fragment() {
             Log.i("teste", "Objeto atualizado")
         })
 
-    }
-
-    interface IListaNoticiasFragment{
-        fun quandoFabSalvaNoticiaClicada()
-        fun quandoNoticiaSelecionada(noticia: Noticia)
     }
 
 }

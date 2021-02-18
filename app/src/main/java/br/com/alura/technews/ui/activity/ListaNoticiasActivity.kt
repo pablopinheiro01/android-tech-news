@@ -11,7 +11,7 @@ import br.com.alura.technews.ui.fragment.ListaNoticiasFragment
 private const val TITULO_APPBAR = "Notícias"
 
 
-class ListaNoticiasActivity: AppCompatActivity(), ListaNoticiasFragment.IListaNoticiasFragment {
+class ListaNoticiasActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,15 +25,15 @@ class ListaNoticiasActivity: AppCompatActivity(), ListaNoticiasFragment.IListaNo
         super.onAttachFragment(fragment)
         //verifico qual o tipo de fragment q esta sendo utilizado,
         // lembrando que essa imoplementação permite uma flexibilidade maior no uso de fragments
-//        if(fragment is ListaNoticiasFragment){
-//            fragment.quandoNoticiaSelecionada = {
-//                abreVisualizadorNoticia(it)
-//            }
-//
-//            fragment.quandoFabSalvaNoticiaClicada = {
-//                abreFormularioModoCriacao()
-//            }
-//        }
+        if(fragment is ListaNoticiasFragment){
+            fragment.quandoNoticiaSelecionada = {
+                abreVisualizadorNoticia(it)
+            }
+
+            fragment.quandoFabSalvaNoticiaClicada = {
+                abreFormularioModoCriacao()
+            }
+        }
     }
 
     private fun abreFormularioModoCriacao() {
@@ -45,14 +45,6 @@ class ListaNoticiasActivity: AppCompatActivity(), ListaNoticiasFragment.IListaNo
         val intent = Intent(this, VisualizaNoticiaActivity::class.java)
         intent.putExtra(NOTICIA_ID_CHAVE, it.id)
         startActivity(intent)
-    }
-
-    override fun quandoFabSalvaNoticiaClicada() {
-        abreFormularioModoCriacao()
-    }
-
-    override fun quandoNoticiaSelecionada(noticia: Noticia) {
-        abreVisualizadorNoticia(noticia)
     }
 
 }
