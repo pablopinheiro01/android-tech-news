@@ -1,6 +1,7 @@
 package br.com.alura.technews.ui.activity
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -10,6 +11,9 @@ import br.com.alura.technews.ui.activity.extensions.transacaoFragment
 import br.com.alura.technews.ui.fragment.ListaNoticiasFragment
 import br.com.alura.technews.ui.fragment.VisualizaNoticiaFragment
 
+private const val TAG_FRAGMENT_VISUALIZA_NOTICIA = "visualizaNoticia"
+
+
 class NoticiasActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,13 +22,45 @@ class NoticiasActivity: AppCompatActivity() {
         //verifica se ja existe um estado criado pela activity
         if(savedInstanceState == null){
             abreListaNoticias()
-        }
+        }else{
+            //caso tenha algum conteudo temos os fragments disponiveis, vou verificar se é o fragment de noticia
+            supportFragmentManager.findFragmentByTag(TAG_FRAGMENT_VISUALIZA_NOTICIA)?.let{fragmentCriado ->
+                // a partir dos argumentos existentes eu crio um novo fragment
+                val argumentos = fragmentCriado.arguments
+                //este novo fragment pode ser utilizado no replace passando o novo fragment evitando erro de reuso do fragment anterior
+                val novoFragment = VisualizaNoticiaFragment()
+                //passo os argumentos
+                novoFragment.arguments = argumentos
 
+                transacaoFragment {
+                    remove(fragmentCriado)
+                }
+
+                //precisamos realizar este procedimento para exibir a lista fazendo o pop na tela
+                supportFragmentManager.popBackStack()
+
+                //caso o tipo do fragment seja o mesmo (Visualiza noticia) eu crio um novo container conforme a sua orientação
+                transacaoFragment {
+                    //verifico qual a posicao da tela
+                    val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+                        R.id.activity_noticias_container_secundario
+                    }else{
+                        //permite voltar para um determinado ponto
+                        //backstack so executa no modo retrato
+                        addToBackStack(null)
+                        R.id.activity_noticias_container_primario
+                    }
+                    //faço o replace do Fragment passando o novo fragmento no container criado
+                    replace(container, novoFragment, TAG_FRAGMENT_VISUALIZA_NOTICIA)
+                }
+
+            }
+        }
     }
 
     private fun abreListaNoticias() {
         transacaoFragment {
-            replace(R.id.activity_noticias_container, ListaNoticiasFragment(), "lista-noticias")
+            replace(R.id.activity_noticias_container_primario, ListaNoticiasFragment(), "lista-noticias")
         }
     }
 
@@ -69,8 +105,15 @@ class NoticiasActivity: AppCompatActivity() {
         transacaoFragment {
             //permite voltar para um determinado ponto
 //            addToBackStack("lista-noticias") //eu informo o nome no caso de voltar para uma tela especifica
-            addToBackStack(null)
-            replace(R.id.activity_noticias_container,fragment)
+            //verifico qual a posicao da tela
+            val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+                R.id.activity_noticias_container_secundario
+            }else{
+                //backstack so executa no modo retrato
+                addToBackStack(null)
+                R.id.activity_noticias_container_primario
+            }
+            replace(container, fragment, TAG_FRAGMENT_VISUALIZA_NOTICIA)
         }
     }
 
