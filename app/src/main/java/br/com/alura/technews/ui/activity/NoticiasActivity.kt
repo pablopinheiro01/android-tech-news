@@ -10,6 +10,7 @@ import br.com.alura.technews.model.Noticia
 import br.com.alura.technews.ui.activity.extensions.transacaoFragment
 import br.com.alura.technews.ui.fragment.ListaNoticiasFragment
 import br.com.alura.technews.ui.fragment.VisualizaNoticiaFragment
+import kotlinx.android.synthetic.main.activity_noticias.*
 
 private const val TAG_FRAGMENT_VISUALIZA_NOTICIA = "visualizaNoticia"
 
@@ -42,7 +43,9 @@ class NoticiasActivity: AppCompatActivity() {
                 //caso o tipo do fragment seja o mesmo (Visualiza noticia) eu crio um novo container conforme a sua orientação
                 transacaoFragment {
                     //verifico qual a posicao da tela
-                    val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+//                    val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+                    //esta implementacao garante que vamos verificar diretamente a View que vai conter o container
+                    val container = if(activity_noticias_container_secundario != null){
                         R.id.activity_noticias_container_secundario
                     }else{
                         //permite voltar para um determinado ponto
@@ -105,8 +108,9 @@ class NoticiasActivity: AppCompatActivity() {
         transacaoFragment {
             //permite voltar para um determinado ponto
 //            addToBackStack("lista-noticias") //eu informo o nome no caso de voltar para uma tela especifica
-            //verifico qual a posicao da tela
-            val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            //verifico qual a posicao da tela, no caso aqui eu admito que qualquer dispositivo vai suportar a visualização de ambos os fragments
+//            val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            val container = if(activity_noticias_container_secundario != null ){
                 R.id.activity_noticias_container_secundario
             }else{
                 //backstack so executa no modo retrato
