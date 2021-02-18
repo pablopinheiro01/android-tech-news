@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import br.com.alura.technews.R
 import br.com.alura.technews.model.Noticia
+import br.com.alura.technews.ui.activity.extensions.mostraErro
 import br.com.alura.technews.ui.viewmodel.VisualizaNoticiaViewModel
 import kotlinx.android.synthetic.main.activity_visualiza_noticia.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -78,7 +79,7 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
 
     private fun verificaIdDaNoticia() {
         if (noticiaId == 0L) {
-            br.com.alura.technews.ui.fragment.extensions.mostraErro(
+            mostraErro(
                 NOTICIA_NAO_ENCONTRADA
             )
             finish()
@@ -97,7 +98,7 @@ class VisualizaNoticiaActivity : AppCompatActivity() {
                 if(it.erro == null){
                     finish()
                 }else{
-                    br.com.alura.technews.ui.fragment.extensions.mostraErro(
+                    mostraErro(
                         MENSAGEM_FALHA_REMOCAO
                     )
                 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.alura.technews.R
+import br.com.alura.technews.model.Noticia
 import br.com.alura.technews.ui.fragment.extensions.mostraErro
 import br.com.alura.technews.ui.recyclerview.adapter.ListaNoticiasAdapter
 import br.com.alura.technews.ui.viewmodel.ListaNoticiasViewModel
@@ -21,12 +22,16 @@ private const val MENSAGEM_FALHA_CARREGAR_NOTICIAS = "Não foi possível carrega
 
 class ListaNoticiasFragment : Fragment() {
 
+
     private val adapter by lazy {
         context?.let { ListaNoticiasAdapter(context = it) }
     } ?: throw IllegalArgumentException("Contexto invalido")
 
     private val viewModel: ListaNoticiasViewModel by viewModel<ListaNoticiasViewModel>()
 
+    var quandoFabSalvaNoticiaClicada: () -> Unit = {}
+    var quandoNoticiaSelecionada: (noticia: Noticia) -> Unit = {}
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //aqui nao criamos a View, apenas fazemos inicializações,
@@ -51,7 +56,7 @@ class ListaNoticiasFragment : Fragment() {
 
     private fun configuraFabAdicionaNoticia() {
         lista_noticias_fab_salva_noticia.setOnClickListener {
-//            abreFormularioModoCriacao()
+            quandoFabSalvaNoticiaClicada()
         }
     }
 
@@ -63,7 +68,7 @@ class ListaNoticiasFragment : Fragment() {
     }
 
     private fun configuraAdapter() {
-//        adapter.quandoItemClicado = this::abreVisualizadorNoticia
+        adapter?.quandoItemClicado = quandoNoticiaSelecionada
     }
 
     private fun buscaNoticias() {
@@ -81,5 +86,6 @@ class ListaNoticiasFragment : Fragment() {
         })
 
     }
+
 
 }
