@@ -20,11 +20,6 @@ class NoticiasActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_noticias)
         title = TITULO_APPBAR
-
-//        val transacao = supportFragmentManager.beginTransaction()
-//        transacao.add(R.id.activity_noticias_container, ListaNoticiasFragment(), "lista-noticias")
-//        transacao.commit()
-        //este codigo substitui o fonte acima
         transacaoFragment {
             add(R.id.activity_noticias_container, ListaNoticiasFragment(), "lista-noticias")
         }
@@ -48,9 +43,8 @@ class NoticiasActivity: AppCompatActivity() {
     }
 
     private fun configuraVisualizaNoticia(fragment: VisualizaNoticiaFragment) {
-        fragment.quandoFinalizaTela = { finish() }
-        fragment.quandoSelecionaMenuEdicao =
-            { noticiaSelecionada -> abreFormularioEdicao(noticiaSelecionada) }
+        fragment.quandoFinalizaTela = this::finish
+        fragment.quandoSelecionaMenuEdicao = this::abreFormularioEdicao
     }
 
     private fun configuraListaNoticias(fragment: ListaNoticiasFragment) {
@@ -64,36 +58,16 @@ class NoticiasActivity: AppCompatActivity() {
     }
 
     private fun abreVisualizadorNoticia(noticia: Noticia) {
-//        val intent = Intent(this, VisualizaNoticiaActivity::class.java)
-//        intent.putExtra(NOTICIA_ID_CHAVE, it.id)
-//        startActivity(intent)
 
-        //criando um fragment programaticamente
-//        val transacao = supportFragmentManager.beginTransaction()
         val fragment = VisualizaNoticiaFragment()
         val dados = Bundle()
         dados.putLong(NOTICIA_ID_CHAVE, noticia.id)
         fragment.arguments = dados
 
-//        val fragmentEncontrado = supportFragmentManager.findFragmentByTag("lista-noticias")
-//        if(fragmentEncontrado != null){
-//            transacao.remove(fragmentEncontrado)
-//        }
-//        transacao.add(R.id.activity_visualiza_noticia_viewgroup_fragment_container,fragment)
-        //esta linha de codigo equivale a remover o fragment conforme o comportamento programado acima
-//        transacao.replace(R.id.activity_visualiza_noticia_viewgroup_fragment_container,fragment)
-        //executa a criacao do fragment
-//        transacao.commit()
-
-        //apenas esse metodo criado conseguimos absolver as linhas acima
         transacaoFragment {
             replace(R.id.activity_visualiza_noticia_viewgroup_fragment_container,fragment)
-
         }
-
     }
-
-
 
     private fun abreFormularioEdicao(noticia: Noticia) {
         val intent = Intent(this, FormularioNoticiaActivity::class.java)
