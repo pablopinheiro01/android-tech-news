@@ -84,7 +84,13 @@ class NoticiasActivity: AppCompatActivity() {
     }
 
     private fun configuraVisualizaNoticia(fragment: VisualizaNoticiaFragment) {
-        fragment.quandoFinalizaTela = this::finish
+//        fragment.quandoFinalizaTela = this::finish
+        fragment.quandoFinalizaTela = {
+            supportFragmentManager.findFragmentByTag(TAG_FRAGMENT_VISUALIZA_NOTICIA)?.let{ fragment ->
+                transacaoFragment { remove(fragment) }
+                supportFragmentManager.popBackStack()
+            }
+        }
         fragment.quandoSelecionaMenuEdicao = this::abreFormularioEdicao
     }
 
