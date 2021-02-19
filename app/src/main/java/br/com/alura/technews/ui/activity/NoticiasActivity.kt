@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import br.com.alura.technews.R
 import br.com.alura.technews.model.Noticia
 import br.com.alura.technews.ui.activity.extensions.transacaoFragment
@@ -21,43 +22,39 @@ class NoticiasActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_noticias)
         //verifica se ja existe um estado criado pela activity
-        if(savedInstanceState == null){
+        configuraFragmentoPeloEstado(savedInstanceState)
+    }
+
+    private fun configuraFragmentoPeloEstado(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) {
             abreListaNoticias()
-        }else{
+        } else {
             //caso tenha algum conteudo temos os fragments disponiveis, vou verificar se é o fragment de noticia
-            supportFragmentManager.findFragmentByTag(TAG_FRAGMENT_VISUALIZA_NOTICIA)?.let{fragmentCriado ->
-                // a partir dos argumentos existentes eu crio um novo fragment
-                val argumentos = fragmentCriado.arguments
-                //este novo fragment pode ser utilizado no replace passando o novo fragment evitando erro de reuso do fragment anterior
-                val novoFragment = VisualizaNoticiaFragment()
-                //passo os argumentos
-                novoFragment.arguments = argumentos
+            supportFragmentManager.findFragmentByTag(TAG_FRAGMENT_VISUALIZA_NOTICIA)
+                ?.let { fragmentCriado ->
+                    // a partir dos argumentos existentes eu crio um novo fragment
+                    val argumentos = fragmentCriado.arguments
+                    //este novo fragment pode ser utilizado no replace passando o novo fragment evitando erro de reuso do fragment anterior
+                    val novoFragment = VisualizaNoticiaFragment()
+                    //passo os argumentos
+                    novoFragment.arguments = argumentos
 
-                transacaoFragment {
-                    remove(fragmentCriado)
-                }
+                    removeFragmentVisualizaNoticia(fragmentCriado)
 
-                //precisamos realizar este procedimento para exibir a lista fazendo o pop na tela
-                supportFragmentManager.popBackStack()
+                    //precisamos realizar este procedimento para exibir a lista fazendo o pop na tela
+                    supportFragmentManager.popBackStack()
 
-                //caso o tipo do fragment seja o mesmo (Visualiza noticia) eu crio um novo container conforme a sua orientação
-                transacaoFragment {
-                    //verifico qual a posicao da tela
-//                    val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
-                    //esta implementacao garante que vamos verificar diretamente a View que vai conter o container
-                    val container = if(activity_noticias_container_secundario != null){
-                        R.id.activity_noticias_container_secundario
-                    }else{
-                        //permite voltar para um determinado ponto
-                        //backstack so executa no modo retrato
-                        addToBackStack(null)
-                        R.id.activity_noticias_container_primario
+                    //caso o tipo do fragment seja o mesmo (Visualiza noticia) eu crio um novo container conforme a sua orientação
+                    transacaoFragment {
+                        //verifico qual a posicao da tela
+    //                    val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+                        //esta implementacao garante que vamos verificar diretamente a View que vai conter o container
+                        val container = configuraContainerFragmentVisualizaNoticia()
+                        //faço o replace do Fragment passando o novo fragmento no container criado
+                        replace(container, novoFragment, TAG_FRAGMENT_VISUALIZA_NOTICIA)
                     }
-                    //faço o replace do Fragment passando o novo fragmento no container criado
-                    replace(container, novoFragment, TAG_FRAGMENT_VISUALIZA_NOTICIA)
-                }
 
-            }
+                }
         }
     }
 
@@ -87,11 +84,17 @@ class NoticiasActivity: AppCompatActivity() {
 //        fragment.quandoFinalizaTela = this::finish
         fragment.quandoFinalizaTela = {
             supportFragmentManager.findFragmentByTag(TAG_FRAGMENT_VISUALIZA_NOTICIA)?.let{ fragment ->
-                transacaoFragment { remove(fragment) }
+                removeFragmentVisualizaNoticia(fragment)
                 supportFragmentManager.popBackStack()
             }
         }
         fragment.quandoSelecionaMenuEdicao = this::abreFormularioEdicao
+    }
+
+    private fun removeFragmentVisualizaNoticia(fragmentCriado: Fragment) {
+        transacaoFragment {
+            remove(fragmentCriado)
+        }
     }
 
     private fun configuraListaNoticias(fragment: ListaNoticiasFragment) {
@@ -116,15 +119,20 @@ class NoticiasActivity: AppCompatActivity() {
 //            addToBackStack("lista-noticias") //eu informo o nome no caso de voltar para uma tela especifica
             //verifico qual a posicao da tela, no caso aqui eu admito que qualquer dispositivo vai suportar a visualização de ambos os fragments
 //            val container = if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
-            val container = if(activity_noticias_container_secundario != null ){
-                R.id.activity_noticias_container_secundario
-            }else{
-                //backstack so executa no modo retrato
-                addToBackStack(null)
-                R.id.activity_noticias_container_primario
-            }
+            val container = configuraContainerFragmentVisualizaNoticia()
             replace(container, fragment, TAG_FRAGMENT_VISUALIZA_NOTICIA)
         }
+    }
+
+    private fun FragmentTransaction.configuraContainerFragmentVisualizaNoticia(): Int {
+        val container = if (activity_noticias_container_secundario != null) {
+            R.id.activity_noticias_container_secundario
+        } else {
+            //backstack so executa no modo retrato
+            addToBackStack(null)
+            R.id.activity_noticias_container_primario
+        }
+        return container
     }
 
     private fun abreFormularioEdicao(noticia: Noticia) {
